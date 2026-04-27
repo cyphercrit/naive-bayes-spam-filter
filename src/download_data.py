@@ -38,7 +38,10 @@ class DownloadData:
 
     def extract_data(self, file_name: str) -> None:
         from_path = self.raw_directory / file_name
-        to_path = (self.ham_directory / file_name if "ham" in file_name else self.spam_directory / file_name)
+        # Sort path by spam/ham and removes .tar.bz2 suffix
+        to_path = Path(str(
+            self.ham_directory / file_name if "ham" in file_name else self.spam_directory / file_name
+        ).removesuffix(".tar.bz2"))
 
         try:
             with tarfile.open(from_path, "r:bz2") as tar:
@@ -50,7 +53,3 @@ class DownloadData:
         for file_name in self.file_names:
             self.download_file(file_name)
             self.extract_data(file_name)
-    
-if __name__ == "__main__":
-    data_downloader = DownloadData(["20021010_easy_ham.tar.bz2", "20030228_spam.tar.bz2"], "https://spamassassin.apache.org/old/publiccorpus/")
-    data_downloader.download_data()
